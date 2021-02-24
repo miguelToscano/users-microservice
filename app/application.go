@@ -12,6 +12,7 @@ func Start() {
 
 	app.GET("/health", health.Check)
 	app.POST("/users", users.Create)
+	app.GET("/users/:user_id", users.Get)
 
 	app.Run()
 }

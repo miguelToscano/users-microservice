@@ -2,12 +2,34 @@ package users
 
 import (
 	"net/http"
+	"strconv"
 	"users-microservice/domain/users"
 	"users-microservice/errors"
 	"users-microservice/services"
 
 	"github.com/gin-gonic/gin"
 )
+
+func Get(c *gin.Context) {
+	userId, paramErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+
+	if paramErr != nil {
+		err := errors.NewBadRequestError("User id should be a number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	user, getErr := services.GetUser(userId)
+
+	if getErr != nil {
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+
+	c.JSON(200, user)
+
+	return
+}
 
 // Create user
 func Create(c *gin.Context) {

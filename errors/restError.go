@@ -13,3 +13,11 @@ func NewBadRequestError(message string) *RestError {
 		Error:   "bad_request",
 	}
 }
+
+func NewNotFoundError(message string) *RestError {
+	return &RestError{
+		Message: message,
+		Status:  404,
+		Error:   "not_found",
+	}
+}
