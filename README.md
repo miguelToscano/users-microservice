@@ -7,5 +7,7 @@ They work as endpoints entry points. They're responsible for validating incoming
 They handle business logic.
 ### 3. Domain
 Here we model our business entities, in this case: users.
-## Data persistence pattern
+## Data persistence pattern: DAO (Data access object)
+This patterns consists in delegating interacting with the database to each business Entity. In this case, only the User entity knows how to interact with the database.
+
 
