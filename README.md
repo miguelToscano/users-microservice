@@ -1,4 +1,4 @@
-# Users API
+# Users Service
 ## MVC architectural pattern
 The app is divided into three components.
 ### 1. Controllers
