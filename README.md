@@ -1,6 +1,6 @@
 # Users Service
 ## MVC architectural pattern
-The app is divided into three components.
+The app is divided into three components, exposing a REST API to manage users resources.
 ### 1. Controllers
 They work as endpoints entry points. They're responsible for validating incoming data and calling services to handle business logic.
 ### 2. Services
