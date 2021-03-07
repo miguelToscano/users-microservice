@@ -6,7 +6,7 @@ import (
 )
 
 func GetUser(userId int64) (*users.User, *errors.RestError) {
-	result := &users.User{ID: userId}
+	result := &users.User{Id: userId}
 
 	if err := result.Get(); err != nil {
 		return nil, err

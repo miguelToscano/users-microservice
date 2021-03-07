@@ -2,41 +2,69 @@ package users
 
 import (
 	"fmt"
+	users_db "users-microservice/databases/mysql"
 	"users-microservice/errors"
 )
 
-// user_dao stands for "User Data access object", in this file we define how a
-// user interacts with the database
-
-// mock database
-var (
-	usersDb = make(map[int64]*User)
+const (
+	insertUserQuery     = "INSERT INTO users(first_name, last_name, email, date_created) VALUES(?, ?, ?, ?)"
+	selectUserByIdQuery = "SELECT * FROM users WHERE id = ?"
 )
 
-func (user *User) Get() *errors.RestError {
-	result := usersDb[user.ID]
+func (user *User) Get() (*User, *errors.RestError) {
 
-	if result == nil {
-		err := errors.NewNotFoundError(fmt.Sprintf("User with id %d not found", user.ID))
-		return err
+	if err := users_db.Client.Ping(); err != nil {
+		panic(err)
 	}
 
-	user.ID = result.ID
-	user.FirstName = result.FirstName
-	user.LastName = result.LastName
-	user.Email = result.Email
-	user.DateCreated = result.DateCreated
+	statement, err := users_db.Client.Prepare(selectUserByIdQuery)
 
-	return nil
+	defer statement.Close()
+
+	if err != nil {
+		return nil, errors.NewInternalServerError(err.Error())
+	}
+
+	selectResult, err := users_db.Client.Query(selectUserByIdQuery, user.Id)
+
+	if err != nil {
+		return nil, errors.NewInternalServerError(err.Error())
+	}
+
+	foundUser := selectResult.Scan()
+
+	return &User{Id: foundUser.id, FirstName: foundUser.first_name, Email: foundUser.email, DateCreated: foundUser.date_created}, nil
 }
 
 func (user *User) Save() *errors.RestError {
 
-	if usersDb[user.ID] != nil {
-		return errors.NewBadRequestError(fmt.Sprintf("User with ID: %d already exists", user.ID))
+	if err := users_db.Client.Ping(); err != nil {
+		panic(err)
 	}
 
-	usersDb[user.ID] = user
+	statement, err := users_db.Client.Prepare(insertUserQuery)
+
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+
+	defer statement.Close()
+
+	insertResult, err := statement.Exec(user.FirstName, user.LastName, user.Email, user.DateCreated)
+
+	if err != nil {
+		return errors.NewInternalServerError(fmt.Sprintf("Error when trying to write user into the database: %s", err.Error()))
+	}
+
+	userId, err := insertResult.LastInsertId()
+
+	if err != nil {
+		return errors.NewInternalServerError(fmt.Sprintf("Error when trying to get last user's id from the database: %s", err.Error()))
+	}
+
+	user.Id = userId
+
+	defer statement.Close()
 
 	return nil
 }

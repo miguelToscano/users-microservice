@@ -1,9 +1,9 @@
 package errors
 
 type RestError struct {
-	Message string `json: "message"`
-	Status  int    `json: "status"`
-	Error   string `json: "error"`
+	Message string `json:"message"`
+	Status  int    `json:"status"`
+	Error   string `json:"error"`
 }
 
 func NewBadRequestError(message string) *RestError {
@@ -19,5 +19,13 @@ func NewNotFoundError(message string) *RestError {
 		Message: message,
 		Status:  404,
 		Error:   "not_found",
+	}
+}
+
+func NewInternalServerError(message string) *RestError {
+	return &RestError{
+		Message: message,
+		Status:  500,
+		Error:   "internal_error",
 	}
 }
