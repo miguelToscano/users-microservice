@@ -9,5 +9,7 @@ They handle business logic.
 Here we model our business entities, in this case: users.
 ## Data persistence pattern: DAO (Data access object)
 This patterns consists in delegating interacting with the database to each business Entity. In this case, only the User entity knows how to interact with the database.
+## Database
+For this project i chose to use a SQL Database, particularly Mysql as it integrates well with Go.
 
 
